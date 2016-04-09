@@ -1,0 +1,21 @@
+{
+  "name": "thorin-plugin-session",
+  "author": "Stiudeo",
+  "version": "1.0.0",
+  "dependencies": {
+    "cookie": "^0.2.3",
+    "node-uuid": "^1.4.7",
+    "write-file-atomic": "^1.1.4"
+  },
+  "description": "Thorin.js Intent session extender",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Stiudeo/Thorin-plugin-session"
+  },
+  "homepage": "http://thorinjs.com",
+  "bugs": {
+    "url": "https://github.com/Stiudeo/Thorin-plugin-session/issues"
+  }
+}
