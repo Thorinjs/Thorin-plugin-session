@@ -1,7 +1,7 @@
 {
   "name": "thorin-plugin-session",
   "author": "Stiudeo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "dependencies": {
     "cookie": "^0.2.3",
     "node-uuid": "^1.4.7",
