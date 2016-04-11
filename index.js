@@ -31,7 +31,7 @@ module.exports = function(thorin, opt, pluginName) {
     secure: false,        // will the cookie work only on HTTPS?
     encrypt: true,        // should we encrypt the session data?
     secret: false,        // will we use a server secret to sign the cookie id?
-    logger: pluginName,
+    logger: pluginName || 'session',
     expire: 3600 * 24,    // the number of seconds a session is active.
     namespace: 'session'  // the default namespace that we're going to use in the store.
   }, opt);
@@ -47,13 +47,15 @@ module.exports = function(thorin, opt, pluginName) {
     }
   }
   if (typeof storeInfo === 'string') {
-    let _timer = setTimeout(() => {
-      logger.warn(`Thorin session did not receive a store yet. Please check that the store "${storeInfo}" is registered.`);
-    }, 4000); // if we haven't booted the app in 5seconds, we warn.
-    thorin.on(thorin.EVENT.INIT, 'store.' + storeInfo, (storeObj) => {
-      clearTimeout(_timer);
-      sessionStoreObj.store = storeObj;
-    });
+    if(storeInfo !== 'file') {
+      let _timer = setTimeout(() => {
+        logger.warn(`Thorin session did not receive a store yet. Please check that the store "${storeInfo}" is registered.`);
+      }, 4000); // if we haven't booted the app in 5seconds, we warn.
+      thorin.on(thorin.EVENT.INIT, 'store.' + storeInfo, (storeObj) => {
+        clearTimeout(_timer);
+        sessionStoreObj.store = storeObj;
+      });
+    }
   } else if (storeInfo instanceof thorin.Interface.Store) {
     sessionStoreObj.store = storeInfo;
   } else {
@@ -61,5 +63,6 @@ module.exports = function(thorin, opt, pluginName) {
   }
 
   sessionIntentInit(thorin, sessionStoreObj, opt);
+  sessionStoreObj.name = opt.logger;
   return sessionStoreObj;
 };
