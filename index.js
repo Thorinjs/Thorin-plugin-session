@@ -30,6 +30,7 @@ module.exports = function(thorin, opt, pluginName) {
     cookiePath: '/',      // the default cookie path that we're going to use.
     secure: false,        // will the cookie work only on HTTPS?
     encrypt: true,        // should we encrypt the session data?
+    authorization: true,  // should it add itself as an authorization source? This will attach the plain session id to intentObj.authorization, if found empty
     secret: false,        // will we use a server secret to sign the cookie id?
     logger: pluginName || 'session',
     expire: 3600 * 24,    // the number of seconds a session is active.
