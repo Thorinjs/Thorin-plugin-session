@@ -14,8 +14,11 @@ const path = require('path');
  *            persist our sessions. This should be used in production.
  *      OR
  *  - path: (string, the absolute folder path to use to store sessions as files.) This should be used in dev.
+ *
+ *  --setup=plugin.session
  */
 const sessionIntentInit = require('./lib/sessionIntent'),
+  initModel = require('./lib/initModels'),
   sessionStoreInit = require('./lib/sessionStore');
 module.exports = function(thorin, opt, pluginName) {
   let storeInfo, sessionStoreObj;
@@ -55,6 +58,7 @@ module.exports = function(thorin, opt, pluginName) {
       thorin.on(thorin.EVENT.INIT, 'store.' + storeInfo, (storeObj) => {
         clearTimeout(_timer);
         sessionStoreObj.store = storeObj;
+        initModel(thorin, storeObj, opt);
       });
     }
   } else if (storeInfo instanceof thorin.Interface.Store) {
@@ -62,8 +66,20 @@ module.exports = function(thorin, opt, pluginName) {
   } else {
     console.error('Thorin plugin session requires a store to work.');
   }
-
+  // TODO: add the setup() function
   sessionIntentInit(thorin, sessionStoreObj, opt);
   sessionStoreObj.name = opt.logger;
+
+  sessionStoreObj.setup = function DoSetup(done) {
+    if(storeInfo !== 'sql') { return done(); }
+    thorin.on(thorin.EVENT.RUN, 'store.' + storeInfo, (storeObj) => {
+      let modelName = opt.namespace;
+      storeObj.sync(modelName).catch((e) => {
+        logger.warn(`Could not sync db with session model ${modelName}`, e);
+      });
+    });
+    done();
+  };
+
   return sessionStoreObj;
 };
