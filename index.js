@@ -58,7 +58,9 @@ module.exports = function(thorin, opt, pluginName) {
       thorin.on(thorin.EVENT.INIT, 'store.' + storeInfo, (storeObj) => {
         clearTimeout(_timer);
         sessionStoreObj.store = storeObj;
-        initModel(thorin, storeObj, opt);
+        if(storeInfo === 'sql') {
+          initModel(thorin, storeObj, opt);
+        }
       });
     }
   } else if (storeInfo instanceof thorin.Interface.Store) {
@@ -66,6 +68,7 @@ module.exports = function(thorin, opt, pluginName) {
   } else {
     console.error('Thorin plugin session requires a store to work.');
   }
+
   // TODO: add the setup() function
   sessionIntentInit(thorin, sessionStoreObj, opt);
   sessionStoreObj.name = opt.logger;
