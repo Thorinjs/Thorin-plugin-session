@@ -84,5 +84,7 @@ module.exports = function(thorin, opt, pluginName) {
     done();
   };
 
+  /* Returns the actual parsed options. */
+  sessionStoreObj.options = opt;
   return sessionStoreObj;
 };
