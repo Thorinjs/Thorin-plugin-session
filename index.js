@@ -88,3 +88,4 @@ module.exports = function(thorin, opt, pluginName) {
   sessionStoreObj.options = opt;
   return sessionStoreObj;
 };
+module.exports.publicName = 'session';
