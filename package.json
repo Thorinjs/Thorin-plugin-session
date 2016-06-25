@@ -1,7 +1,7 @@
 {
   "name": "thorin-plugin-session",
   "author": "Stiudeo",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "dependencies": {
     "cookie": "^0.2.3",
     "node-uuid": "^1.4.7",
@@ -12,10 +12,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Stiudeo/Thorin-plugin-session"
+    "url": "https://github.com/Thorinjs/Thorin-plugin-session"
   },
   "homepage": "http://thorinjs.com",
   "bugs": {
-    "url": "https://github.com/Stiudeo/Thorin-plugin-session/issues"
+    "url": "https://github.com/Thorinjs/Thorin-plugin-session/issues"
   }
 }
