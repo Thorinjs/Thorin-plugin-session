@@ -29,6 +29,7 @@ module.exports = function(thorin, opt, pluginName) {
   }
   opt = thorin.util.extend({
     //store: 'file',      // the default storage is the file system.
+    cookiePrefix: '',     // should we add a prefix to the cookie key?
     cookieName: 'tps',    // the default cookie name that we're going to use.
     cookiePath: '/',      // the default cookie path that we're going to use.
     secure: false,        // will the cookie work only on HTTPS?
