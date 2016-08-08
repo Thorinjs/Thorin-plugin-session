@@ -1,11 +1,11 @@
 {
   "name": "thorin-plugin-session",
   "author": "Stiudeo",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "dependencies": {
-    "cookie": "^0.2.3",
-    "node-uuid": "^1.4.7",
-    "write-file-atomic": "^1.1.4"
+    "cookie": "0.3.1",
+    "node-uuid": "1.4.7",
+    "write-file-atomic": "1.1.4"
   },
   "description": "Thorin.js Intent session extender",
   "main": "index.js",
