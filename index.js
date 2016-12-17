@@ -38,6 +38,7 @@ module.exports = function(thorin, opt, pluginName) {
     secret: false,        // will we use a server secret to sign the cookie id?
     logger: pluginName || 'session',
     expire: 3600 * 24,    // the number of seconds a session is active.
+    removeExpired: true,  // only applicable for store type sql and file. If set to true, we will not perform the cleanup.
     namespace: 'session'  // the default namespace that we're going to use in the store.
   }, opt);
   let SessionStore = sessionStoreInit(thorin, opt),
