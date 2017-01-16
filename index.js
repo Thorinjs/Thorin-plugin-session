@@ -20,9 +20,9 @@ const path = require('path');
 const sessionIntentInit = require('./lib/sessionIntent'),
   initModel = require('./lib/initModels'),
   sessionStoreInit = require('./lib/sessionStore');
-module.exports = function(thorin, opt, pluginName) {
+module.exports = function (thorin, opt, pluginName) {
   let storeInfo, sessionStoreObj;
-  if(!opt.store) opt.store = 'file';
+  if (!opt.store) opt.store = 'file';
   if (opt.store) {
     storeInfo = opt.store;
     delete opt.store;
@@ -41,6 +41,7 @@ module.exports = function(thorin, opt, pluginName) {
     removeExpired: true,  // only applicable for store type sql and file. If set to true, we will not perform the cleanup.
     namespace: 'session'  // the default namespace that we're going to use in the store.
   }, opt);
+  thorin.config(`plugin.${pluginName}`, opt);
   let SessionStore = sessionStoreInit(thorin, opt),
     logger = thorin.logger(opt.logger);
   sessionStoreObj = new SessionStore(opt);
@@ -53,14 +54,14 @@ module.exports = function(thorin, opt, pluginName) {
     }
   }
   if (typeof storeInfo === 'string') {
-    if(storeInfo !== 'file') {
+    if (storeInfo !== 'file') {
       let _timer = setTimeout(() => {
         logger.warn(`Thorin session did not receive a store yet. Please check that the store "${storeInfo}" is registered.`);
       }, 4000); // if we haven't booted the app in 5seconds, we warn.
       thorin.on(thorin.EVENT.INIT, 'store.' + storeInfo, (storeObj) => {
         clearTimeout(_timer);
         sessionStoreObj.store = storeObj;
-        if(storeInfo === 'sql') {
+        if (storeInfo === 'sql') {
           initModel(thorin, storeObj, opt);
         }
       });
@@ -76,7 +77,9 @@ module.exports = function(thorin, opt, pluginName) {
   sessionStoreObj.name = opt.logger;
 
   sessionStoreObj.setup = function DoSetup(done) {
-    if(storeInfo !== 'sql') { return done(); }
+    if (storeInfo !== 'sql') {
+      return done();
+    }
     thorin.on(thorin.EVENT.RUN, 'store.' + storeInfo, (storeObj) => {
       let modelName = opt.namespace;
       storeObj.sync(modelName).catch((e) => {
