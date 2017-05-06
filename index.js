@@ -52,8 +52,11 @@ module.exports = function (thorin, opt, pluginName) {
       type: 'file',
       path: opt.path || path.normalize(thorin.root + '/sessions')
     }
-  }
-  if (typeof storeInfo === 'string') {
+  } else if (storeInfo === 'memory') {
+    sessionStoreObj.store = {
+      type: 'memory'
+    };
+  } else if (typeof storeInfo === 'string') {
     if (storeInfo !== 'file') {
       let _timer = setTimeout(() => {
         logger.warn(`Thorin session did not receive a store yet. Please check that the store "${storeInfo}" is registered.`);
