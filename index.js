@@ -18,6 +18,7 @@ const path = require('path');
  *  --setup=plugin.session
  */
 const sessionIntentInit = require('./lib/sessionIntent'),
+  sessionActionInit = require('./lib/sessionAction'),
   initModel = require('./lib/initModels'),
   sessionStoreInit = require('./lib/sessionStore');
 module.exports = function (thorin, opt, pluginName) {
@@ -77,6 +78,7 @@ module.exports = function (thorin, opt, pluginName) {
 
   // TODO: add the setup() function
   sessionIntentInit(thorin, sessionStoreObj, opt);
+  sessionActionInit(thorin, sessionStoreObj, opt);
   sessionStoreObj.name = opt.logger;
 
   sessionStoreObj.setup = function DoSetup(done) {
