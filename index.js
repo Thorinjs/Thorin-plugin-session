@@ -40,7 +40,8 @@ module.exports = function (thorin, opt, pluginName) {
     logger: pluginName || 'session',
     expire: 3600 * 24,    // the number of seconds a session is active.
     removeExpired: true,  // only applicable for store type sql and file. If set to true, we will not perform the cleanup.
-    namespace: 'session'  // the default namespace that we're going to use in the store.
+    namespace: 'session',  // the default namespace that we're going to use in the store.
+    attributes: []          // a list of attributes (while store='sql') we're using for session. This should not be used generally
   }, opt);
   thorin.config(`plugin.${pluginName}`, opt);
   let SessionStore = sessionStoreInit(thorin, opt),
