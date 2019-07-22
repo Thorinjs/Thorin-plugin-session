@@ -7,6 +7,7 @@ const path = require('path');
  * Plugin options:
  *  - cookieName: the cookie name, defaults to "tps"
  *  - cookieDomain: '.' -> which domain to apply the cookie
+ *  - sameSite: true -> if set to true, add the SameSite option
  *  - secure: false -> is the cookie for https only?
  *  - expire=24h - the number of ms till we expire the sessions.
  *  - namespace: the namespace we'll use in the store.
@@ -36,6 +37,7 @@ module.exports = function (thorin, opt, pluginName) {
     cookiePath: '/',      // the default cookie path that we're going to use.
     secure: false,        // will the cookie work only on HTTPS?
     encrypt: true,        // should we encrypt the session data?
+    sameSite: false,      // set to true to add SameSite option
     authorization: true,  // should it add itself as an authorization source? This will attach the plain session id to intentObj.authorization, if found empty
     secret: false,        // will we use a server secret to sign the cookie id?
     logger: pluginName || 'session',
