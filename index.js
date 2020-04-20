@@ -18,11 +18,11 @@ const path = require('path');
  *
  *  --setup=plugin.session
  */
-const sessionIntentInit = require('./lib/sessionIntent'),
-  sessionActionInit = require('./lib/sessionAction'),
+const initSessionIntent = require('./lib/sessionIntent'),
+  initSessionAction = require('./lib/sessionAction'),
   initModel = require('./lib/initModels'),
-  sessionStoreInit = require('./lib/sessionStore');
-module.exports = function (thorin, opt, pluginName) {
+  initSessionStore = require('./lib/sessionStore');
+module.exports = function init(thorin, opt, pluginName) {
   let storeInfo, sessionStoreObj;
   if (!opt.store) opt.store = 'file';
   if (opt.store) {
@@ -47,7 +47,7 @@ module.exports = function (thorin, opt, pluginName) {
     attributes: []          // a list of attributes (while store='sql') we're using for session. This should not be used generally
   }, opt);
   thorin.config(`plugin.${pluginName}`, opt);
-  let SessionStore = sessionStoreInit(thorin, opt),
+  let SessionStore = initSessionStore(thorin, opt),
     logger = thorin.logger(opt.logger);
   sessionStoreObj = new SessionStore(opt);
 
@@ -80,23 +80,26 @@ module.exports = function (thorin, opt, pluginName) {
     console.error('Thorin plugin session requires a store to work.');
   }
 
-  // TODO: add the setup() function
-  sessionIntentInit(thorin, sessionStoreObj, opt);
-  sessionActionInit(thorin, sessionStoreObj, opt);
+  initSessionIntent(thorin, sessionStoreObj, opt);
+  initSessionAction(thorin, sessionStoreObj, opt);
   sessionStoreObj.name = opt.logger;
 
-  sessionStoreObj.setup = function DoSetup(done) {
-    if (storeInfo !== 'sql') {
-      return done();
-    }
-    thorin.on(thorin.EVENT.RUN, 'store.' + storeInfo, (storeObj) => {
-      let modelName = opt.namespace;
-      storeObj.sync(modelName).catch((e) => {
+  if (storeInfo === 'sql') {
+    sessionStoreObj.run = async (allDone) => {
+      const storeObj = thorin.store(storeInfo),
+        modelName = opt.namespace;
+      if (!storeObj) return allDone();
+      if (typeof storeObj.settingUp !== 'boolean') return allDone(); // not setting up.
+      try {
+        logger.info(`Setting up session models`);
+        await storeObj.sync(modelName);
+        allDone();
+      } catch (e) {
         logger.warn(`Could not sync db with session model ${modelName}`, e);
-      });
-    });
-    done();
-  };
+        allDone(e);
+      }
+    }
+  }
 
   /* Returns the actual parsed options. */
   sessionStoreObj.options = opt;
