@@ -92,7 +92,10 @@ module.exports = function init(thorin, opt, pluginName) {
       if (typeof storeObj.settingUp !== 'boolean') return allDone(); // not setting up.
       try {
         logger.info(`Setting up session models`);
-        await storeObj.sync(modelName);
+        const logging = opt.debug ? (msg) => logger.trace(msg) : false;
+        await storeObj.sync(modelName, {
+          logging
+        });
         allDone();
       } catch (e) {
         logger.warn(`Could not sync db with session model ${modelName}`, e);
