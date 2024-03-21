@@ -23,14 +23,15 @@ const initSessionIntent = require('./lib/sessionIntent'),
   initModel = require('./lib/initModels'),
   initSessionStore = require('./lib/sessionStore');
 module.exports = function init(thorin, opt, pluginName) {
-  let storeInfo, sessionStoreObj;
+  let storeInfo,
+    sessionStoreObj;
   if (!opt.store) opt.store = 'file';
   if (opt.store) {
     storeInfo = opt.store;
     delete opt.store;
   }
   opt = thorin.util.extend({
-    //store: 'file',      // the default storage is the file system.
+    //store: 'file',      // file, memory, redis, sql, jwt
     debug: false,
     cookiePrefix: '',     // should we add a prefix to the cookie key?
     cookieName: 'tps',    // the default cookie name that we're going to use.
@@ -40,6 +41,7 @@ module.exports = function init(thorin, opt, pluginName) {
     sameSite: false,      // set to true to add SameSite option
     authorization: true,  // should it add itself as an authorization source? This will attach the plain session id to intentObj.authorization, if found empty
     secret: false,        // will we use a server secret to sign the cookie id?
+    // JWT: require('jsonwebtoken;);  // for when store.mode=jwt - the JSON Web Token instance to work with.
     logger: pluginName || 'session',
     expire: 3600 * 24,    // the number of seconds a session is active.
     removeExpired: true,  // only applicable for store type sql and file. If set to true, we will not perform the cleanup.
@@ -47,8 +49,26 @@ module.exports = function init(thorin, opt, pluginName) {
     attributes: []          // a list of attributes (while store='sql') we're using for session. This should not be used generally
   }, opt);
   thorin.config(`plugin.${pluginName}`, opt);
-  let SessionStore = initSessionStore(thorin, opt),
-    logger = thorin.logger(opt.logger);
+  const logger = thorin.logger(opt.logger);
+  // At this point: we need to check the JWT configuration.
+  if (storeInfo === 'jwt') {
+    opt.encrypt = false;
+    if (!opt.secret) {
+      logger.fatal(`thorin-plugin-session: jwt mode requires a "secret" to be specified in "plugin.session" configuration.`);
+      return process.exit(1);
+    }
+    let JWT = opt.JWT;
+    if (!JWT) {
+      try {
+        JWT = require('jsonwebtoken');
+      } catch (e) {
+        logger.fatal(`thorin-plugin-session: jwt mode requires module jsonwebtoken. Please run "npm i jsonwebtoken"`);
+        return process.exit(1);
+      }
+    }
+    opt.JWT = JWT;
+  }
+  let SessionStore = initSessionStore(thorin, opt, storeInfo);
   sessionStoreObj = new SessionStore(opt);
 
   // bind the init of the store.
@@ -60,6 +80,10 @@ module.exports = function init(thorin, opt, pluginName) {
   } else if (storeInfo === 'memory') {
     sessionStoreObj.store = {
       type: 'memory'
+    };
+  } else if (storeInfo === 'jwt') {
+    sessionStoreObj.store = {
+      type: 'jwt'
     };
   } else if (typeof storeInfo === 'string') {
     if (storeInfo !== 'file') {
